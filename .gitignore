@@ -1,0 +1,25 @@
+# maven files
+/target/*
+/target/
+*/target/*
+# Java class files
+*.class
+# MAC files
+*/.DS_Store
+.DS_Store
+# IDEA files
+*/.idea/
+.idea/
+*.iml
+*.ipr
+*.iws
+out
+# Eclipse Project files
+*/.classpath
+.classpath
+*/.project
+.project
+*/.settings/
+.settings/
+# META-INF
+*/META-INF/*
