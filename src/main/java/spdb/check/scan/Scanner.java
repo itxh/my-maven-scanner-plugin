@@ -2,10 +2,12 @@ package spdb.check.scan;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +19,12 @@ import java.util.List;
 public class Scanner {
     private Log log;
     private long scanFileCount; //扫描的文件数
-    private List<String> targer_key = new ArrayList<String>();//需要过滤的字符串,从文本中加载
+    private List<String> target_key = new ArrayList<String>();//需要过滤的字符串,从文本中加载
+    private List<String> suffixFilter = new ArrayList<String>();//过滤指定后缀文件
+    private List<String> suffixMatch = new ArrayList<String>();//扫描特定后缀文件,优先级高于suffixFilter
+    private boolean isMatch = false; //是否扫描指定后缀文件
     private List<ScannerResult> results = new ArrayList<ScannerResult>();//扫描后命中的目标
+
 
     public Scanner(){}
     public Scanner(Log log) {
@@ -26,12 +32,33 @@ public class Scanner {
         this.log = log;
     }
 
-    public void loadRule(String rulePath) throws MojoExecutionException{
-        File file = new File(rulePath);
-        if (file.isFile()){
-            targer_key = ScannerUtils.loadRule(file);
-        } else {
-            log.error("rule file load error");
+    public void loadConfig(String config) throws MojoExecutionException {
+        try {
+            InputStream input = new FileInputStream(config);
+            Yaml yaml = new Yaml();
+            Map<String, Object> object = (Map<String, Object>) yaml.load(input);
+            log.info("rule_file:" + object.get("rule_file"));
+            log.info("suffix_filter_file:" + object.get("suffix_filter_file"));
+            log.info("suffix_match_file:" + object.get("suffix_match_file"));
+            target_key = ScannerUtils.loadFile((String) object.get("rule_file"));
+            suffixFilter = ScannerUtils.loadFile((String) object.get("suffix_filter_file"));
+            suffixMatch = ScannerUtils.loadFile((String) object.get("suffix_match_file"));
+
+            if (suffixMatch.size() > 0){
+                log.info("current scan policy : suffix Match.");
+                for (String match: suffixMatch){
+                    log.info("suffix match : " + match);
+                }
+                isMatch = true;
+            } else {
+                log.info("current scan policy : suffix Filter.");
+                for (String filter: suffixFilter){
+                    log.info("suffix Filter : " + filter);
+                }
+                isMatch = false;
+            }
+
+        }catch (Exception e){
             throw new MojoExecutionException("load error");
         }
 
@@ -40,7 +67,20 @@ public class Scanner {
         for(String path: sacnPathList){
             scan(path);
         }
-        ScannerUtils.showResult(results, log);
+    }
+
+    public void showResult(String targetPath) throws MojoExecutionException{
+        if (results != null && results.size() > 0){
+            log.error("scanner result count : " + results.size());
+            for (ScannerResult sr : results){
+                log.error(sr.toString());
+            }
+            String filename = ScannerUtils.wirteResult(targetPath, results);
+            log.info("result write file : " + filename );
+            throw new MojoExecutionException("scann");
+        } else {
+            log.info("[ok] Scan succeeded ! ");
+        }
     }
 
 
@@ -50,7 +90,7 @@ public class Scanner {
      * @return 是否包含敏感字符
      */
     private  void scan(String path) {
-        log.info("[*] scan path : " + path);
+
         File file = new File(path);
         if (file.isDirectory()){//该root目录存在
             String[] dirFils = file.list();
@@ -58,10 +98,37 @@ public class Scanner {
                 scan(path + "/" + dir);
             }
         } else if (file.isFile()){
-            scan_file(file);
+            boolean isCan = isScanFile(file.getName());
+            if (isCan){
+                scan_file(file);
+            }
         }
     }
 
+    /**
+     * 判断该文件是否需要扫描
+     * @param fileName
+     * @return
+     */
+    private boolean isScanFile(String fileName){
+        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+        if (isMatch) { //扫描指定后缀文件
+            for (String match : suffixMatch) {
+                if (match.toUpperCase().indexOf(suffix.toUpperCase()) != -1){
+                    return true;
+                }
+            }
+            return false;
+        } else {//过滤指定后缀文件
+            for (String filter : suffixFilter) {
+                if (filter.toUpperCase().indexOf(suffix.toUpperCase()) != -1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    }
     /**
      * 扫描文件
      * @param file
@@ -79,7 +146,7 @@ public class Scanner {
                 number ++;
                 line = line.trim();
                 // 核心扫描处理
-                for (String targer: targer_key){
+                for (String targer: target_key){
                      if (line.toUpperCase().indexOf(targer.toUpperCase()) != -1){
                          ScannerResult sr = new ScannerResult();
                          sr.setFilePath(file.getAbsolutePath());

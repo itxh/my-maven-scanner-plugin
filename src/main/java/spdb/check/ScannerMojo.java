@@ -16,7 +16,7 @@ import java.util.List;
  * Time: 下午1:25
  * 扫描源文件插件
  * @goal scanner
- * @phase  pre-integration-test
+ * @phase  process-sources
  */
 public class ScannerMojo extends AbstractMojo {
 
@@ -27,18 +27,13 @@ public class ScannerMojo extends AbstractMojo {
     private MavenProject project;
 
 
-    /**
-     * @parameter expression="${buildinfo.prefix}"
-     * default-value="+++"
-     */
-    private String prefix;
 
     /**
      * 规则文件
-     * @parameter expression="${scanner.rulepath}"
+     * @parameter expression="${scanner.config}"
      * default-value=" "
      */
-    private String rulePath = "";
+    private String config = "";
 
 
 
@@ -48,20 +43,22 @@ public class ScannerMojo extends AbstractMojo {
         getLog().info("---------------------------------------------------");
         getLog().info("*         spdb-maven-scanner-plugin begin          *");
         getLog().info("---------------------------------------------------");
-        getLog().info("\t" + prefix + " src source root: " + build.getSourceDirectory());
+        String targetPath = build.getDirectory();
+
+        getLog().info("src source root: " + build.getSourceDirectory());
+        getLog().info( "junit source root: " + build.getTestSourceDirectory());
         scanPathList.add(build.getSourceDirectory());
-        getLog().info("\t" + prefix + " junit source root: " + build.getTestSourceDirectory());
         scanPathList.add(build.getTestSourceDirectory());
         List<Resource> resources = build.getResources();
         for (Resource resource: resources) {
-            getLog().info("\t" + prefix + " resource root: " + resource.getDirectory());
+            getLog().info("resource root: " + resource.getDirectory());
             scanPathList.add(resource.getDirectory());
         }
+        getLog().info("config : " + config);
         Scanner scanner = new Scanner(getLog());
-        getLog().info("rulePath:" + rulePath);
-        scanner.loadRule(rulePath);
+        scanner.loadConfig(config);
         scanner.start(scanPathList);
-
+        scanner.showResult(targetPath);
 
     }
 }

@@ -12,20 +12,21 @@ public class ScannerResult {
     private int number;
     private String filePath;
     private String line;
-    private String targer;
+    private String target;
 
     public String toString(){
-        return "file : " + filePath +
+        return " file : " + filePath +
                 "\n number : " + number +
-                "\n targer : " + targer +
+                "\n target : " + target +
                 "\n line : " + line;
     }
+
     public String getTarget() {
-        return targer;
+        return target;
     }
 
-    public void setTarget(String targer) {
-        this.targer = targer;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public int getNumber() {
