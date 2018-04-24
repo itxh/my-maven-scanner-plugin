@@ -49,11 +49,11 @@ config.yaml
 #         2.所有key: value配置value前需有空格
 #         3.该文件聚合其他配置文件，需填写决定地址
 ###########################################################
-需要扫描的关键字目录
+# 需要扫描的关键字目录
 rule_file: /tmp/config/rule.txt
-#指定扫描特定后缀文件
+# 指定扫描特定后缀文件
 suffix_match_file: /tmp/config/suffix_match_file.txt
-#过滤指定后缀文件
+# 过滤指定后缀文件
 suffix_filter_file: /tmp/config/suffix_filter_file.txt
 ```
 
