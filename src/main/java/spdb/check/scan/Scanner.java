@@ -19,9 +19,9 @@ import java.util.Map;
 public class Scanner {
     private Log log;
     private long scanFileCount; //扫描的文件数
-    private List<String> target_key = new ArrayList<String>();//需要过滤的字符串,从文本中加载
-    private List<String> suffixFilter = new ArrayList<String>();//过滤指定后缀文件
-    private List<String> suffixMatch = new ArrayList<String>();//扫描特定后缀文件,优先级高于suffixFilter
+    private List <String> target_key;//需要过滤的字符串,从文本中加载
+    private List <String> suffixFilter;//过滤指定后缀文件
+    private List <String> suffixMatch;//扫描特定后缀文件,优先级高于suffixFilter
     private boolean isMatch = false; //是否扫描指定后缀文件
     private List<ScannerResult> results = new ArrayList<ScannerResult>();//扫描后命中的目标
 
@@ -37,14 +37,15 @@ public class Scanner {
             InputStream input = new FileInputStream(config);
             Yaml yaml = new Yaml();
             Map<String, Object> object = (Map<String, Object>) yaml.load(input);
-            log.info("rule_file:" + object.get("rule_file"));
-            log.info("suffix_filter_file:" + object.get("suffix_filter_file"));
-            log.info("suffix_match_file:" + object.get("suffix_match_file"));
-            target_key = ScannerUtils.loadFile((String) object.get("rule_file"));
-            suffixFilter = ScannerUtils.loadFile((String) object.get("suffix_filter_file"));
-            suffixMatch = ScannerUtils.loadFile((String) object.get("suffix_match_file"));
+            log.info("rule:" + object.get("rule"));
+            log.info("suffix_filter:" + object.get("suffix_filter"));
+            log.info("suffix_match:" + object.get("suffix_match"));
 
-            if (suffixMatch.size() > 0){
+            target_key = (List <String>) object.get("rule");
+            suffixFilter = (List <String>) object.get("suffix_filter");
+            suffixMatch =  (List <String>) object.get("suffix_match");
+
+            if (suffixMatch != null && suffixMatch.size() > 0){
                 log.info("current scan policy : suffix Match.");
                 for (String match: suffixMatch){
                     log.info("suffix match : " + match);
@@ -59,6 +60,7 @@ public class Scanner {
             }
 
         }catch (Exception e){
+            e.printStackTrace();
             throw new MojoExecutionException("load error");
         }
 

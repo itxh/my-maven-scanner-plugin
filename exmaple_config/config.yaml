@@ -1,14 +1,39 @@
-##########################################################
-#                    maven版本文件扫描
-#    注意：
-#         1.所有url及目录配置需以"/"或" \"结尾
-#         2.所有key: value配置value前需有空格
-#         3.详细项目及jenkins配置见readme.txt
-#
-##########################################################
+
+# ===============================================================
+# ========================= maven版本文件扫描 ! ===================
+# ===============================================================
 #需要扫描的关键字目录
-rule_file: /tmp/config/rule.txt
+rule:
+  - luotao
+  - wangj
 #指定扫描特定后缀文件
-suffix_match_file: /tmp/config/suffix_match_file.txt
+suffix_match:
+  - .java
 #过滤指定后缀文件
-suffix_filter_file: /tmp/config/suffix_filter_file.txt
+suffix_filter:
+  - .svn
+  - .css
+  - .jpg
+  - .png
+  - .gif
+  - .setting
+  - .project
+  - .metadata
+  - .plugins
+  - .prefs
+  - .ptlist
+  - .MF
+  - .swf
+  - .sh
+  - .dtd
+  - .scc
+  - .log
+  - .lck
+  - .zip
+  - .php
+  - .classes
+  - .project
+  - .jar
+  - .dwt
+  - .dnx
+  - .xsl
