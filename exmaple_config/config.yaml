@@ -1,0 +1,14 @@
+##########################################################
+#                    maven版本文件扫描
+#    注意：
+#         1.所有url及目录配置需以"/"或" \"结尾
+#         2.所有key: value配置value前需有空格
+#         3.详细项目及jenkins配置见readme.txt
+#
+##########################################################
+#需要扫描的关键字目录
+rule_file: /tmp/config/rule.txt
+#指定扫描特定后缀文件
+suffix_match_file: /tmp/config/suffix_match_file.txt
+#过滤指定后缀文件
+suffix_filter_file: /tmp/config/suffix_filter_file.txt
