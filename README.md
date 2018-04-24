@@ -113,9 +113,9 @@ suffix_match_file.txt
 Step 3. 使用
 
 mvn install -Dscanner.config=/Users/lettuce/GitRepo/spdb-maven-scanner-plugin/exmaple_config/config.yaml
+> -Dscanner.config 指定为config.yaml 的决定地址
 
--Dscanner.config 指定为config.yaml 的决定地址
 
 
-如有任何问题,请提交Issues。
+### 如有任何问题,请联系我(T-luot1@spdbdev.com)或请提交Issues。
 
