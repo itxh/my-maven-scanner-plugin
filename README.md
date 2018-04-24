@@ -1,4 +1,4 @@
-# spdb-maven-scanner-plugin
+# my-maven-scanner-plugin
 
 该项目是一个maven build 插件，设计为在maven 项目集成到jenkins后，执行mvn install 打包前执行该插件。
 
@@ -95,5 +95,5 @@ mvn install -Dscanner.config=/Users/lettuce/GitRepo/spdb-maven-scanner-plugin/ex
 
 
 
-### 如有任何问题,请联系我(T-luot1@spdbdev.com)或请提交Issues。
+### 如有任何问题,请提交Issues。
 
